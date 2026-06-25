@@ -139,17 +139,13 @@ function buildFilters() {
       if (f) flowerCount[f] = (flowerCount[f] || 0) + 1;
     });
   });
-  // 收集色系
-  const colorSet = new Set();
-  ALL.forEach(item => {
-    if (item.colors) colorSet.add(item.colors.split(' / ')[0].trim());
-  });
 
   const container = document.getElementById('filters');
   container.innerHTML = '';
 
-  // 色系 chips
-  [...colorSet].sort().forEach(c => {
+  // 固定色系 chips
+  const baseColors = ['粉','白','紅','紫','藍','橘','黃','綠','黑','灰','奶茶','繽紛'];
+  baseColors.forEach(c => {
     const el = document.createElement('span');
     el.className = 'chip';
     el.textContent = c;
