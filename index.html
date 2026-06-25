@@ -118,28 +118,20 @@ let activeFilter = '';
 async function init() {
   const res = await fetch('data.json');
   const tags = await res.json();
-  ALL = Object.entries(tags).map(([bf_no, v]) => ({
-    bf_no,
-    url: v.url || '',
-    colors: v.colors || '',
-    flowers: v.flowers || '',
-    note: v.note || ''
-  }));
+  ALL = Object.entries(tags)
+    .filter(([, v]) => v.url)
+    .map(([bf_no, v]) => ({
+      bf_no,
+      url: v.url,
+      colors: v.colors || '',
+      flowers: v.flowers || '',
+      note: v.note || ''
+    }));
   buildFilters();
   render();
 }
 
 function buildFilters() {
-  // 收集所有花材
-  const flowerCount = {};
-  ALL.forEach(item => {
-    if (!item.flowers) return;
-    item.flowers.split('、').forEach(f => {
-      f = f.trim();
-      if (f) flowerCount[f] = (flowerCount[f] || 0) + 1;
-    });
-  });
-
   const container = document.getElementById('filters');
   container.innerHTML = '';
 
@@ -154,19 +146,6 @@ function buildFilters() {
     container.appendChild(el);
   });
 
-  // 常用花材（出現 5+ 次）
-  const common = Object.entries(flowerCount)
-    .filter(([,n]) => n >= 5)
-    .sort((a,b) => b[1]-a[1])
-    .map(([f]) => f);
-  common.forEach(f => {
-    const el = document.createElement('span');
-    el.className = 'chip';
-    el.textContent = f;
-    el.dataset.filter = f;
-    el.onclick = () => toggleFilter(f, el);
-    container.appendChild(el);
-  });
 }
 
 function toggleFilter(val, el) {
