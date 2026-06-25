@@ -115,6 +115,15 @@
 let ALL = [];
 let activeFilter = '';
 
+function extractDate(bf_no) {
+  // BF + price(xTy) + day(2d) + weekday(1-2L) + year(2d) + month(2d) + seq(optional)
+  const m = bf_no.match(/^BF.T.(\d{2})[A-Z]{1,2}(\d{2})(\d{2})[A-Z]?$/);
+  if (m) return (parseInt(m[2]) + 2000) * 10000 + parseInt(m[3]) * 100 + parseInt(m[1]);
+  const m2 = bf_no.match(/(\d{2})(\d{2})[A-Z]?$/);
+  if (m2) return (parseInt(m2[1]) + 2000) * 10000 + parseInt(m2[2]) * 100;
+  return 0;
+}
+
 async function init() {
   const res = await fetch('data.json');
   const tags = await res.json();
@@ -126,7 +135,8 @@ async function init() {
       colors: v.colors || '',
       flowers: v.flowers || '',
       note: v.note || ''
-    }));
+    }))
+    .sort((a, b) => extractDate(b.bf_no) - extractDate(a.bf_no));
   buildFilters();
   render();
 }
