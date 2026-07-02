@@ -125,7 +125,7 @@ function extractDate(bf_no) {
 }
 
 async function init() {
-  const res = await fetch('data.json');
+  const res = await fetch('data.json?t=' + Date.now());
   const tags = await res.json();
   ALL = Object.entries(tags)
     .filter(([, v]) => v.url)
